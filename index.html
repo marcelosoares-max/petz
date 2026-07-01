@@ -345,6 +345,69 @@ footer .footer-logos { margin-bottom: 1.5rem; display: flex; justify-content: ce
 </head>
 <body>
 
+<!-- ════ GATE DE ACESSO ════ -->
+<div id="gate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#060C14 0%,#0D2137 100%);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="width:100%;max-width:360px;background:#0F2236;border:1px solid rgba(28,200,238,0.2);border-radius:24px;padding:2.5rem 2rem;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.6);">
+    <div style="font-size:2rem;margin-bottom:1rem;">🐾</div>
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#1CC8EE;margin-bottom:0.5rem;">Petz × Blip · Proposta Estratégica</div>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:800;color:#F0F4F8;margin-bottom:0.4rem;line-height:1.3;">Acesso Restrito</h2>
+    <p style="font-family:'Sora',sans-serif;font-size:0.8rem;color:#8CA0B4;margin-bottom:2rem;line-height:1.6;">Este documento é confidencial.<br>Insira a senha para continuar.</p>
+    <input id="gate-pwd"
+      type="password"
+      placeholder="Senha de acesso"
+      autocomplete="current-password"
+      style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;font-family:'Sora',sans-serif;font-size:0.9rem;color:#F0F4F8;outline:none;margin-bottom:0.75rem;box-sizing:border-box;transition:border-color 0.2s;"
+      onkeydown="if(event.key==='Enter')checkGate()"
+      onfocus="this.style.borderColor='rgba(28,200,238,0.5)'"
+      onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+    >
+    <div id="gate-err" style="font-family:'Sora',sans-serif;font-size:0.78rem;color:#F23C3C;margin-bottom:0.75rem;display:none;">Senha incorreta. Tente novamente.</div>
+    <button
+      onclick="checkGate()"
+      style="width:100%;background:#1CC8EE;color:#0D2137;border:none;border-radius:10px;padding:13px;font-family:'Sora',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;"
+      onmouseover="this.style.opacity='0.85'"
+      onmouseout="this.style.opacity='1'"
+    >Entrar →</button>
+    <p style="font-family:'Sora',sans-serif;font-size:0.65rem;color:rgba(140,160,180,0.45);margin-top:1.5rem;">Documento confidencial · Uso interno exclusivo</p>
+  </div>
+</div>
+
+<script>
+(async function() {
+  // Verificar sessão ativa
+  if (sessionStorage.getItem('petz_blip_auth') === '1') {
+    document.getElementById('gate').style.display = 'none';
+  }
+
+  async function sha256(msg) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  window.checkGate = async function() {
+    const pwd = document.getElementById('gate-pwd').value;
+    const hash = await sha256(pwd);
+    // Senha padrão: Petz@2026 — para alterar, substitua o hash abaixo
+    // Gere um novo hash em: https://emn178.github.io/online-tools/sha256.html
+    const HASH = '4335eb85b2caab0ebf57b83da55409bd74e61620d6ec97aef9097bb499c2c0c4';
+    if (hash === HASH) {
+      sessionStorage.setItem('petz_blip_auth', '1');
+      const gate = document.getElementById('gate');
+      gate.style.transition = 'opacity 0.4s';
+      gate.style.opacity = '0';
+      setTimeout(() => gate.style.display = 'none', 400);
+    } else {
+      const err = document.getElementById('gate-err');
+      err.style.display = 'block';
+      const input = document.getElementById('gate-pwd');
+      input.value = '';
+      input.style.borderColor = 'rgba(242,60,60,0.5)';
+      setTimeout(() => { input.style.borderColor = 'rgba(255,255,255,0.12)'; }, 1500);
+    }
+  };
+})();
+</script>
+
 <!-- ════════════════ HERO ════════════════ -->
 <section class="hero">
   <div class="hero-badge">✦ Diagnóstico + Proposta · 2026</div>
